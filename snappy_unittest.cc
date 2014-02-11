@@ -25,10 +25,13 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
 
 #include <math.h>
 #include <stdlib.h>
-
 
 #include <algorithm>
 #include <string>
@@ -161,6 +164,7 @@ static size_t MinimumRequiredOutputSpace(size_t input_size,
 
     default:
       LOG(FATAL) << "Unknown compression type number " << comp;
+	  return -1;
   }
 }
 
@@ -448,7 +452,7 @@ static void Measure(const char* data,
     }
 
     compressed_size = 0;
-    for (int i = 0; i < compressed.size(); i++) {
+    for (unsigned int i = 0; i < compressed.size(); i++) {
       compressed_size += compressed[i].size();
     }
   }
@@ -505,13 +509,13 @@ static void VerifyIOVec(const string& input) {
   // ranging from 1 to 10.
   char* buf = new char[input.size()];
   ACMRandom rnd(input.size());
-  int num = rnd.Next() % 10 + 1;
+  unsigned int num = rnd.Next() % 10 + 1;
   if (input.size() < num) {
     num = input.size();
   }
   struct iovec* iov = new iovec[num];
   int used_so_far = 0;
-  for (int i = 0; i < num; ++i) {
+  for (unsigned int i = 0; i < num; ++i) {
     iov[i].iov_base = buf + used_so_far;
     if (i == num - 1) {
       iov[i].iov_len = input.size() - used_so_far;
@@ -622,7 +626,7 @@ TYPED_TEST(CorruptedTest, VerifyCorrupted) {
   // This is testing for a security bug - a buffer that decompresses to 100k
   // but we lie in the snappy header and only reserve 0 bytes of memory :)
   source.resize(100000);
-  for (int i = 0; i < source.length(); ++i) {
+  for (size_t i = 0; i < source.length(); ++i) {
     source[i] = 'A';
   }
   snappy::Compress(source.data(), source.size(), &dest);
@@ -764,7 +768,7 @@ TEST(Snappy, RandomData) {
     }
 
     string x;
-    int len = rnd.Uniform(4096);
+    size_t len = rnd.Uniform(4096);
     if (i < 100) {
       len = 65536 + rnd.Uniform(65536);
     }
@@ -1128,18 +1132,17 @@ TEST(Snappy, FindMatchLengthRandom) {
 
 static void CompressFile(const char* fname) {
   string fullinput;
-  file::GetContents(fname, &fullinput, file::Defaults()).CheckSuccess();
+  file::GetContents(fname, &fullinput, file::Defaults());
 
   string compressed;
   Compress(fullinput.data(), fullinput.size(), SNAPPY, &compressed, false);
 
-  file::SetContents(string(fname).append(".comp"), compressed, file::Defaults())
-      .CheckSuccess();
+  file::SetContents(string(fname).append(".comp"), compressed, file::Defaults());
 }
 
 static void UncompressFile(const char* fname) {
   string fullinput;
-  file::GetContents(fname, &fullinput, file::Defaults()).CheckSuccess();
+  file::GetContents(fname, &fullinput, file::Defaults());
 
   size_t uncompLength;
   CHECK(CheckUncompressedLength(fullinput, &uncompLength));
@@ -1149,12 +1152,12 @@ static void UncompressFile(const char* fname) {
   CHECK(snappy::Uncompress(fullinput.data(), fullinput.size(), &uncompressed));
 
   file::SetContents(string(fname).append(".uncomp"), uncompressed,
-                    file::Defaults()).CheckSuccess();
+                    file::Defaults());
 }
 
 static void MeasureFile(const char* fname) {
   string fullinput;
-  file::GetContents(fname, &fullinput, file::Defaults()).CheckSuccess();
+  file::GetContents(fname, &fullinput, file::Defaults());
   printf("%-40s :\n", fname);
 
   int start_len = (FLAGS_start_len < 0) ? fullinput.size() : FLAGS_start_len;

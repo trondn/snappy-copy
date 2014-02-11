@@ -28,12 +28,8 @@
 //
 // Various stubs for the unit tests for the open-source version of Snappy.
 
+#include "snappy.h"
 #include "snappy-test.h"
-
-#ifdef HAVE_WINDOWS_H
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
 
 #include <algorithm>
 
@@ -49,8 +45,7 @@ string ReadTestDataFile(const string& base, size_t size_limit) {
   if (srcdir) {
     prefix = string(srcdir) + "/";
   }
-  file::GetContents(prefix + "testdata/" + base, &contents, file::Defaults()
-      ).CheckSuccess();
+  file::GetContents(prefix + "testdata/" + base, &contents, file::Defaults());
   if (size_limit > 0) {
     contents = contents.substr(0, size_limit);
   }

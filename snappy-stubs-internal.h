@@ -35,6 +35,8 @@
 #include "config.h"
 #endif
 
+#include "snappy-visibility.h"
+
 #include <string>
 
 #include <assert.h>
@@ -390,7 +392,7 @@ inline int Bits::FindLSBSetNonZero64(uint64 n) {
 #endif  // End portable versions.
 
 // Variable-length integer encoding.
-class Varint {
+class SNAPPY_PUBLIC_API Varint {
  public:
   // Maximum lengths of varint encoding of uint32.
   static const int kMax32 = 5;

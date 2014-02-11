@@ -31,6 +31,8 @@
 #ifndef UTIL_SNAPPY_OPENSOURCE_SNAPPY_TEST_H_
 #define UTIL_SNAPPY_OPENSOURCE_SNAPPY_TEST_H_
 
+#include "config.h"
+
 #include <iostream>
 #include <string>
 
@@ -132,14 +134,14 @@ namespace File {
 }  // namespace File
 
 namespace file {
-  int Defaults() { }
+	int Defaults() { return 0; }
 
   class DummyStatus {
    public:
     void CheckSuccess() { }
   };
 
-  DummyStatus GetContents(const string& filename, string* data, int unused) {
+  void GetContents(const string& filename, string* data, int unused) {
     FILE* fp = fopen(filename.c_str(), "rb");
     if (fp == NULL) {
       perror(filename.c_str());
@@ -160,7 +162,7 @@ namespace file {
     fclose(fp);
   }
 
-  DummyStatus SetContents(const string& filename,
+  void SetContents(const string& filename,
                           const string& str,
                           int unused) {
     FILE* fp = fopen(filename.c_str(), "wb");

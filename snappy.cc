@@ -965,7 +965,7 @@ class SnappyIOVecWriter {
   const size_t output_iov_count_;
 
   // We are currently writing into output_iov_[curr_iov_index_].
-  int curr_iov_index_;
+  size_t curr_iov_index_;
 
   // Bytes written to output_iov_[curr_iov_index_] so far.
   size_t curr_iov_written_;
@@ -1057,7 +1057,7 @@ class SnappyIOVecWriter {
     }
 
     // Locate the iovec from which we need to start the copy.
-    int from_iov_index = curr_iov_index_;
+    size_t from_iov_index = curr_iov_index_;
     size_t from_iov_offset = curr_iov_written_;
     while (offset > 0) {
       if (from_iov_offset >= offset) {
